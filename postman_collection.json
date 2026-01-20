@@ -1,0 +1,214 @@
+{
+	"info": {
+		"_postman_id": "ecommerce-backend-collection",
+		"name": "Ecommerce Backend API",
+		"description": "Collection for testing spring boot ecommerce backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Gaming Laptop\",\n    \"description\": \"High-performance laptop\",\n    \"price\": 50000.0,\n    \"stock\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						}
+					}
+				},
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						}
+					}
+				},
+				{
+					"name": "Search Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/search?q=Laptop",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "search"],
+							"query": [
+								{"key": "q", "value": "Laptop"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"user123\",\n    \"productId\": \"REPLACE_WITH_PRODUCT_ID\",\n    \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/add",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", "add"]
+						}
+					}
+				},
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/user123",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", "user123"]
+						}
+					}
+				},
+                {
+					"name": "Clear Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/user123/clear",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", "user123", "clear"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"user123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Get Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/REPLACE_WITH_ORDER_ID",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", "REPLACE_WITH_ORDER_ID"]
+						}
+					}
+				},
+                {
+					"name": "Get User Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/user/user123",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", "user", "user123"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/REPLACE_WITH_ORDER_ID/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", "REPLACE_WITH_ORDER_ID", "cancel"]
+						}
+					}
+				}
+			]
+		},
+        {
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Initiate Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": \"REPLACE_WITH_ORDER_ID\",\n    \"amount\": 50000\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "create"]
+						}
+					}
+				},
+                {
+					"name": "Payment Webhook (Capture)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"payment.captured\",\n  \"payload\": {\n    \"payment\": {\n      \"entity\": {\n        \"id\": \"pay_test_123\",\n        \"order_id\": \"razorpay_order_id\",\n        \"status\": \"captured\"\n      }\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/webhooks/payment",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "webhooks", "payment"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
