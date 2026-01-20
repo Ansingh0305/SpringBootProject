@@ -698,7 +698,4 @@ public class Payment {
 - MongoDB Documentation: https://docs.mongodb.com
 
 ---
-
-**Date:** January 20, 2026
-**Language:** Java 21
-**Build Tool:** Maven 3.8+
+By Anant Singh 10188
