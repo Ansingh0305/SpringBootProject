@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Verification</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .card { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        button { cursor: pointer; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>API Verification Dashboard</h1>
+
+    <div class="card">
+        <h2>1. Product Search</h2>
+        <input type="text" id="searchInput" placeholder="Search query (e.g. Laptop)" value="Laptop">
+        <button onclick="searchProducts()">Search</button>
+        <pre id="searchResult">Waiting...</pre>
+    </div>
+
+    <div class="card">
+        <h2>2. Order History</h2>
+        <input type="text" id="userIdInput" placeholder="User ID" value="user123">
+        <button onclick="getOrderHistory()">Get History</button>
+        <pre id="historyResult">Waiting...</pre>
+    </div>
+
+    <div class="card">
+        <h2>3. Create Order & Cancel</h2>
+        <button onclick="createAndCancel()">Run Flow</button>
+        <div id="flowStatus"></div>
+        <pre id="cancelResult">Waiting...</pre>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+
+        async function searchProducts() {
+            const q = document.getElementById('searchInput').value;
+            try {
+                const res = await fetch(`${API_BASE}/products/search?q=${q}`);
+                const data = await res.json();
+                document.getElementById('searchResult').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('searchResult').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function getOrderHistory() {
+            const uid = document.getElementById('userIdInput').value;
+            try {
+                const res = await fetch(`${API_BASE}/orders/user/${uid}`);
+                const data = await res.json();
+                document.getElementById('historyResult').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('historyResult').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function createAndCancel() {
+            const statusDiv = document.getElementById('flowStatus');
+            const resPre = document.getElementById('cancelResult');
+            
+            try {
+                // 1. Create Product
+                statusDiv.innerHTML = 'Creating product...';
+                const pRes = await fetch(`${API_BASE}/products`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name: "Test Item", price: 100.0, stock: 50})
+                });
+                const prod = await pRes.json();
+
+                // 2. Add to Cart
+                statusDiv.innerHTML += '<br>Adding to cart...';
+                await fetch(`${API_BASE}/cart/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({userId: "verifier", productId: prod.id, quantity: 1})
+                });
+
+                // 3. Create Order
+                statusDiv.innerHTML += '<br>Creating order...';
+                const oRes = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({userId: "verifier"})
+                });
+                const order = await oRes.json();
+
+                // 4. Cancel Order
+                statusDiv.innerHTML += '<br>Cancelling order...';
+                const cRes = await fetch(`${API_BASE}/orders/${order.id}/cancel`, {
+                    method: 'POST'
+                });
+                const cancelData = await cRes.json();
+
+                resPre.textContent = JSON.stringify(cancelData, null, 2);
+                statusDiv.innerHTML += '<br><span class="success">Flow Complete!</span>';
+
+            } catch (e) {
+                resPre.textContent = 'Error: ' + e.message;
+                statusDiv.innerHTML += '<br><span class="error">Failed!</span>';
+            }
+        }
+    </script>
+</body>
+</html>

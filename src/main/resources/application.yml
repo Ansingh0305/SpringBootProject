@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce_db
+
+razorpay:
+  key-id: rzp_test_123456789
+  key-secret: sec_123456789
